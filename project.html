@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Water Tracker</title>
+    <link rel="icon" href="image.png">
+    <style>
+        body {
+            background-color: black;
+            border-radius: 10px;
+            border: 2px solid white;
+            font-family: cursive;
+        }
+
+        .set {
+            color: #fff;
+            font-size: 50px;
+            margin: 5px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            animation: glowText 2s ease-in-out infinite alternate, slideDown 1s ease;
+            text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            cursor: default;
+        }
+
+        @keyframes glowText {
+            from { text-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff; }
+            to { text-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .ppr {
+            display: flex;
+            justify-content: center;
+        }
+
+        .goal, .tracker, .prog {
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 15px #ff00ff;
+            border-radius: 10px;
+            margin: 20px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        h11 {
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .content {
+            display: none;
+            margin-top: 10px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            background-color: #ff00ff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        td, th {
+            border: 1px solid #00ffff;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .filled {
+            background-color: #00ffff;
+            color: black;
+        }
+
+        .droplet {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        progress {
+            width: 80%;
+            height: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        #goalBanner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #00ffff;
+            color: black;
+            font-size: 24px;
+            padding: 25px 40px;
+            border: 2px solid #ff00ff;
+            border-radius: 20px;
+            box-shadow: 0 0 30px #ff00ff;
+            z-index: 9999;
+            animation: fadeScale 0.5s ease-out;
+            text-align: center;
+        }
+
+        #goalBanner button {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: black;
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            cursor: pointer;
+        }
+
+        @keyframes fadeScale {
+            from { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        #progressTip {
+            display: none;
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            background-color: #00ffff;
+            color: black;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            animation: fadeScale 0.5s ease-out;
+            box-shadow: 0 0 10px #ff00ff;
+            z-index: 9999;
+        }
+
+        #progressTip button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: black;
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ppr">
+        <p class="set">✨ WATER TRACKER ✨</p>
+        <img src="img.png" width="50px">
+    </div>
+
+    <div class="card">
+        <div class="goal">
+            <h11 onclick="toggleSection('goalContent')">GOAL</h11>
+            <div class="content" id="goalContent">
+                <p>Are u ready to begin your journey?🧚🏻</p>
+                <label>Choose your goal measurement:💧</label><br>
+                <select id="unit">
+                    <option value=" li">Litres</option>
+                    <option value="gl">Cups</option>
+                </select><br><br>
+                <label for="no">Enter your Goal</label>
+                <input type="number" id="no" placeholder="EG 2">
+                <button onclick="showtracker()">Set Goals</button>
+            </div>
+        </div>
+
+        <div class="tracker">
+            <h11 onclick="toggleSection('trackerContent')">TRACKER</h11>
+            <div class="content" id="trackerContent">
+                <p>Did you hit your goal👾</p>
+                <p>Goal: <span id="goaldis">0</span></p>
+                <p>You've drunk: <span id="drunk">0</span></p>
+                <button onclick="addwater(1)">+1 Unit</button>
+                <button onclick="reset()">Reset</button><br><br>
+                <progress id="prog" value="0" max="100"></progress>
+            </div>
+        </div>
+
+        <div class="prog">
+            <h11 onclick="toggleSection('progressContent')">PROGRESS</h11>
+            <div class="content" id="progressContent">
+                <div id="progressTable"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="goalSound" src="goal.mp3" preload="auto"></audio>
+    <audio id="wellDoneSound" src="well_done.mp3" preload="auto"></audio>
+
+    <div id="goalBanner">
+        🎉 WELL DONE! YOU HIT YOUR GOAL! 🧃
+        <button onclick="closeBanner()">✖</button>
+    </div>
+
+    <div id="progressTip">
+        💡 Check your weekly progress below!
+        <button onclick="document.getElementById('progressTip').style.display='none'">✖</button>
+    </div>
+
+    <script>
+        let goal = 0;
+        let current = 0;
+        let unit = "Litres";
+
+        function toggleSection(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === "block") ? "none" : "block";
+        }
+
+        function showtracker() {
+            unit = document.getElementById("unit").value;
+            goal = Number(document.getElementById("no").value);
+            current = 0;
+            document.getElementById("drunk").textContent = current;
+            document.getElementById("goaldis").textContent = goal + " " + unit;
+            updateProgress();
+            createTable();
+            closeBanner();
+            document.getElementById("trackerContent").style.display = "block";
+
+            // show side tip after tracker opens
+            setTimeout(() => {
+                document.getElementById("progressTip").style.display = "block";
+            }, 1000);
+        }
+
+        function addwater(amount = 1) {
+            if (goal === 0) {
+                alert("Please set a goal first!");
+                return;
+            }
+            current += amount;
+            if (current >= goal) {
+                current = goal;
+                document.getElementById("goalSound").play();
+                document.getElementById("wellDoneSound").play();
+                document.getElementById("goalBanner").style.display = "block";
+            }
+            document.getElementById("drunk").textContent = current;
+            updateProgress();
+        }
+
+        function reset() {
+            current = 0;
+            document.getElementById("drunk").textContent = current;
+            updateProgress();
+            closeBanner();
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById("prog");
+            if (goal === 0) {
+                progress.value = 0;
+                return;
+            }
+            progress.value = (current / goal) * 100;
+        }
+
+        function closeBanner() {
+            document.getElementById("goalBanner").style.display = "none";
+        }
+
+        function createTable() {
+            const goal = parseInt(document.getElementById("no").value);
+            if (!goal || goal <= 0) return;
+            const container = document.getElementById("progressTable");
+            container.innerHTML = "";
+
+            const table = document.createElement("table");
+            const headerRow = document.createElement("tr");
+            let headerHTML = "<th>Day</th>";
+            for (let i = 0; i < goal; i++) {
+                headerHTML += "<th class='droplet'>\uD83D\uDCA7</th>";
+            }
+            headerRow.innerHTML = headerHTML;
+            table.appendChild(headerRow);
+
+            const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+            for (let i = 0; i < 7; i++) {
+                const row = document.createElement("tr");
+                const dayCell = document.createElement("td");
+                dayCell.textContent = days[i];
+                row.appendChild(dayCell);
+
+                for (let j = 0; j < goal; j++) {
+                    const cell = document.createElement("td");
+                    cell.classList.add("droplet");
+                    cell.textContent = "\uD83D\uDCA7";
+                    cell.onclick = function () {
+                        if (!cell.classList.contains("filled")) {
+                            cell.classList.add("filled");
+                            cell.textContent = "\u2705";
+                        }
+                    };
+                    row.appendChild(cell);
+                }
+                table.appendChild(row);
+            }
+            container.appendChild(table);
+        }
+    </script>
+</body>
+
+</html>
+
+
